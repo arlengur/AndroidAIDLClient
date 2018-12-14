@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AndroidAIDLClient</string>
+    <string name="send_name">Send</string>
+    <string name="text_view_text">Inputed text:</string>
+</resources>
