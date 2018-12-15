@@ -2,4 +2,7 @@
     <string name="app_name">AndroidAIDLClient</string>
     <string name="send_name">Send</string>
     <string name="text_view_text">Inputed text:</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

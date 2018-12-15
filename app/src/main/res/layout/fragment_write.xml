@@ -8,15 +8,16 @@
         android:orientation="vertical"
         tools:context=".MainActivity">
 
-    <fragment
+    <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="ru.arlen.androidaidl.ReadFragment"
-            android:id="@+id/fragmentRead"/>
-    <fragment
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/textInput"/>
+    <Button
+            android:text="@string/send_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:name="ru.arlen.androidaidl.WriteFragment"
-            android:id="@+id/fragmentWrite"/>
-
+            android:id="@+id/sendBtn"
+    />
 </LinearLayout>

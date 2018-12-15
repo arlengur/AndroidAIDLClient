@@ -1,6 +1,5 @@
 package ru.arlen.androidaidl;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,17 +7,17 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
+import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity implements IActivityCallbacks {
     private static final String ACTION_AIDL = "ru.arlen.aidl.IDataInterface";
+    public static final String TEXT_ARG = "TEXT";
     private IDataInterface iDataInterface;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -37,40 +36,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        final TextView textOutput = findViewById(R.id.textOutput);
-        final TextView textInput = findViewById(R.id.textInput);
-
-        View send = findViewById(R.id.sendBtn);
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String text = textInput.getText().toString().trim();
-                    if (!text.isEmpty()) {
-                        iDataInterface.saveText(text);
-                        Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_SHORT).show();
-                        textOutput.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    String loaded = iDataInterface.loadText();
-                                    if (!loaded.isEmpty()) {
-                                        String newText = getResources().getString(R.string.text_view_text) + loaded;
-                                        textOutput.setText(newText);
-                                    }
-                                } catch (RemoteException e) {
-                                    Log.w("MainActivity", e.getMessage());
-                                }
-
-                            }
-                        }, 2000);
-                    }
-                } catch (RemoteException e) {
-                    Log.w("MainActivity", e.getMessage());
-                }
-            }
-        });
     }
 
     @Override
@@ -110,5 +75,33 @@ public class MainActivity extends Activity {
         explicitIntent.setComponent(component);
 
         return explicitIntent;
+    }
+
+    @Override
+    public void pressSendButton(String text) {
+        try {
+            iDataInterface.saveText(text);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Bundle bundle = new Bundle();
+                    String loaded = iDataInterface.loadText();
+                    bundle.putString(TEXT_ARG, loaded);
+                    ReadFragment readFragment = new ReadFragment();
+                    readFragment.setArguments(bundle);
+                    getSupportFragmentManager().beginTransaction()
+                                               .replace(R.id.fragmentRead, readFragment)
+                                               .commit();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 2000);
     }
 }
